@@ -1,14 +1,14 @@
 services:
-  mysql:
+  mariadb:
     image: mariadb:latest
-    container_name: mysql
+    container_name: mariadb
     logging:
       driver: none
     command: ["--max-allowed-packet=512M"]
     volumes:
       - "./data/db:/var/lib/mysql:delegated"
     ports:
-      - :3306
+      - :${MYSQL_PORT}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -38,6 +38,24 @@ services:
       TZ: ${TimeZone}
     networks:
       - default
+  laravel:
+    image: bitnami/laravel:latest
+    container_name: laravel
+    volumes:
+      - ./laravel:/app
+    ports:
+      - 8000:8000
+    environment:
+        LARAVEL_DATABASE_HOST: mariadb
+        LARAVEL_DATABASE_PORT_NUMBER: ${MYSQL_PORT}
+        LARAVEL_DATABASE_NAME: ${MYSQL_DATABASE}
+        LARAVEL_DATABASE_USER: ${MYSQL_USER}
+        LARAVEL_DATABASE_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      - mariadb
+    restart: always
+    networks:
+      - default
   phpmyadmin:
     image: bitnami/phpmyadmin:latest
     container_name: phpmyadmin
@@ -45,7 +63,7 @@ services:
       - 8080:8080
       - 8443:8443
     environment:
-        DATABASE_HOST: mysql
+        DATABASE_HOST: mariadb
     restart: always
     networks:
       - default
