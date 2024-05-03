@@ -1,0 +1,70 @@
+services:
+  mysql:
+    image: mariadb:latest
+    container_name: mysql
+    logging:
+      driver: none
+    command: ["--max-allowed-packet=512M"]
+    volumes:
+      - "./data/db:/var/lib/mysql:delegated"
+    ports:
+      - :3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    restart: always
+    networks:
+      - default
+  litespeed:
+    image: litespeedtech/openlitespeed:latest
+    container_name: openlitespeed
+    env_file:
+      - .env
+    volumes:
+      - ./lsws/conf:/usr/local/lsws/conf
+      - ./lsws/admin-conf:/usr/local/lsws/admin/conf
+      - ./sites:/var/www/vhosts/
+      - ./acme:/root/.acme.sh/
+      - ./logs:/usr/local/lsws/logs/
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+      - 7080:7080
+    restart: always
+    environment:
+      TZ: ${TimeZone}
+    networks:
+      - default
+  phpmyadmin:
+    image: bitnami/phpmyadmin:latest
+    container_name: phpmyadmin
+    ports:
+      - 8080:8080
+      - 8443:8443
+    environment:
+        DATABASE_HOST: mysql
+    restart: always
+    networks:
+      - default
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    logging:
+      driver: none
+    # command: redis-server --requirepass 8b405f60665e48f795752e534d93b722
+    volumes:
+      - ./redis/data:/var/lib/redis
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    restart: always
+    networks:
+      - default
+networks:
+  default:
+    driver: bridge
