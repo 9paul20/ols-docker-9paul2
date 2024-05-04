@@ -42,10 +42,12 @@ services:
     image: bitnami/laravel:latest
     container_name: laravel
     volumes:
-      - ./laravel:/app
+      - ./sites/laravel:/app
     ports:
       - 8000:8000
     environment:
+        LARAVEL_SKIP_DATABASE: "no"
+        LARAVEL_DATABASE_TYPE: mysql
         LARAVEL_DATABASE_HOST: mariadb
         LARAVEL_DATABASE_PORT_NUMBER: ${MYSQL_PORT}
         LARAVEL_DATABASE_NAME: ${MYSQL_DATABASE}

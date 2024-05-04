@@ -1,2 +1,5 @@
 *
 !.gitignore
+!localhost
+!laravel
+!node
