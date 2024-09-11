@@ -21,13 +21,82 @@
 
 # OLS Docker Setup
 
-Este repositorio contiene un entorno Docker configurado para el proyecto **OLS**, facilitando la ejecución y el desarrollo de las aplicaciones. A continuación, se muestran los comandos más importantes para levantar los contenedores Docker, junto con una breve descripción de las versiones utilizadas en `docker-compose.yml`.
+Este repositorio es una copia idéntica del proyecto original de GitHub [litespeedtech/ols-docker-env](https://github.com/litespeedtech/ols-docker-env) de la cuenta **litespeedtech**, modificado para un uso más nativo y amigable en cualquier sistema operativo, pero especialmente dirigido a usuarios de Windows. Este entorno Docker facilita la ejecución y el desarrollo de las aplicaciones. A continuación, se muestran los comandos más importantes para levantar los contenedores Docker, junto con una breve descripción de las versiones utilizadas en `docker-compose.yml`.
+
 
 ## Requisitos
 
-- **Docker** y **Docker Compose** instalados en tu sistema.
+- **[Docker](https://www.docker.com/)** y **[Docker Compose](https://docs.docker.com/compose/)** instalados en tu sistema.
 
-## Comandos principales
+## Componentes
+La imagen Docker instala los siguientes paquetes en tu sistema, asegurando que cada uno esté en su última versión estable para ofrecer un entorno de desarrollo completo y actualizado:
+
+|Componente|Versión|
+| :-------------: | :-------------: |
+|MariaDB|[Última versión](https://hub.docker.com/_/mariadb)|
+|OpenLiteSpeed|[Última versión](https://hub.docker.com/r/litespeedtech/openlitespeed)|
+|Laravel|[Última versión](https://hub.docker.com/r/bitnami/laravel/)|
+|phpMyAdmin|[Última versión](https://hub.docker.com/r/bitnami/phpmyadmin/)|
+|Redis|[Última versión](https://hub.docker.com/_/redis/)|
+
+### Explicación de los Componentes
+En el archivo `docker-compose.yml`, se especifican versiones específicas para los servicios necesarios del entorno. Aquí está una breve descripción:
+
+- **MariaDB**: Un sistema de gestión de bases de datos relacional que es una alternativa mejorada y de código abierto a MySQL.
+- **OpenLiteSpeed**: Un servidor web ligero y de alto rendimiento, que ofrece soporte para tecnologías modernas como HTTP/3, PHP y más.
+- **Laravel**: Un framework de desarrollo web en PHP, diseñado para facilitar la creación de aplicaciones web con una arquitectura limpia y modular.
+- **phpMyAdmin**: Una herramienta gráfica para gestionar bases de datos MariaDB/MySQL, lo que facilita la administración de bases de datos sin necesidad de comandos SQL.
+- **Redis**: Un almacén de datos en memoria que mejora la velocidad del acceso a datos y es útil para almacenamiento en caché y sesiones.
+
+Este entorno completo te permite trabajar con todas las herramientas necesarias para desarrollar y gestionar aplicaciones web modernas de manera eficiente.
+
+Asegúrate de que las versiones de estos servicios sean compatibles con tus necesidades de desarrollo.
+
+Notas adicionales
+Puedes personalizar las variables en el archivo .env para ajustar la configuración a tu entorno de desarrollo.
+
+Si necesitas reconstruir los contenedores después de realizar cambios en el archivo docker-compose.yml, ejecuta:
+
+```
+docker-compose up --build
+```
+
+## Estructura de Datos
+Proyecto clonado
+```bash
+├── acme
+│   └── .gitignore
+├── logs
+│   └── .gitignore
+├── lsws
+│   └── .gitignore
+├── sites
+│   ├── laravel
+│   │   └── .gitignore
+│   ├── localhost
+│   │   └── html
+│   │       └── .gitignore
+│   │   └── logs
+│   │       └── .gitignore
+│   └── node
+│       └── .gitignore
+├── .env.example
+├── docker-compose.yml
+├── LICENSE
+└── README.md
+```
+
+  * `acme` contiene todos los certificados aplicados de Let's Encrypt.
+
+  * `logs` contiene todos los registros del servidor web y los registros de acceso de los hosts virtuales.
+
+  * `lsws` contiene todos los archivos de configuración del servidor web.
+
+  * `sites` contiene los directorios raíz de los sitios (aquí se instalará la aplicación de Laravel/PHP, localhost para OpenLiteSpeed y node para proyectos de NodeJS).
+  
+  * `.gitignore` archvivo para ignorar todo contenido de esas carpetas, en caso de querer subir proyectos personales, eliminar el .gitignore correspondiente de cada carpeta.
+
+## Comandos principales y uso
 
 ### 1. Clonar el repositorio
 Antes de empezar, debes clonar el repositorio de OLS Docker en tu máquina local para poder configurar el entorno correctamente. Ejecuta el siguiente comando en tu terminal:
@@ -75,26 +144,12 @@ Si necesitas detener los contenedores, usa:
 docker-compose down
 ```
 
-## Versiones de los servicios Docker
-En el archivo docker-compose.yml, se especifican versiones específicas para los servicios necesarios del entorno. Aquí está una breve descripción:
+## Soporte
+Si aún tienes preguntas después de usar OpenLiteSpeed Docker, tienes algunas opciones:
 
-- **mariadb:latest**: Base de datos relacional utilizada para almacenar y gestionar los datos de la aplicación, compatible con MySQL pero con un enfoque más abierto y flexible.
-- **litespeedtech/openlitespeed:latest**: Servidor web de alto rendimiento que maneja las peticiones hacia la aplicación, optimizado para trabajar con **OpenLiteSpeed** y compatible con WordPress y otros CMS.
-- **bitnami/laravel:latest**: Imagen optimizada de **Laravel** que incluye el entorno completo para ejecutar aplicaciones basadas en este framework PHP, facilitando la configuración y despliegue.
-- **bitnami/phpmyadmin:latest**: Herramienta web utilizada para gestionar bases de datos MariaDB/MySQL a través de una interfaz gráfica, facilitando la administración de tablas, consultas, y configuraciones de bases de datos.
-- **redis:alpine**: Almacenamiento en caché de alta velocidad utilizado para mejorar el rendimiento y la escalabilidad de la aplicación, permitiendo una rápida recuperación de datos.
-
-
-Asegúrate de que las versiones de estos servicios sean compatibles con tus necesidades de desarrollo.
-
-Notas adicionales
-Puedes personalizar las variables en el archivo .env para ajustar la configuración a tu entorno de desarrollo.
-
-Si necesitas reconstruir los contenedores después de realizar cambios en el archivo docker-compose.yml, ejecuta:
-
-```
-docker-compose up --build
-```
+* Unete a la comunidad de [GoLiteSpeed Slack community](https://litespeedtech.com/slack) para discusiones en tiempo real.
+* Publica en los foros de [OpenLiteSpeed Forums](https://forum.openlitespeed.org/) para obtener soporte de la comunidad.
+* Reporta cualquier problema en el proyecto de [Github ols-docker-env](https://github.com/litespeedtech/ols-docker-env/issues).
 
 ## Licencia y Uso
 

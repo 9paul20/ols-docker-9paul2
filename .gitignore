@@ -1,5 +1,7 @@
 .env
 .env.backup
+.env.development
+.env.local
 .env.production
 data
 latest.yml
