@@ -29,17 +29,37 @@ Este repositorio es una copia idéntica del proyecto original de GitHub [litespe
 - **[Docker](https://www.docker.com/)** y **[Docker Compose](https://docs.docker.com/compose/)** instalados en tu sistema.
 
 ## Componentes
+
 La imagen Docker instala los siguientes paquetes en tu sistema, asegurando que cada uno esté en su última versión estable para ofrecer un entorno de desarrollo completo y actualizado:
 
 |Componente|Versión|
 | :-------------: | :-------------: |
-|MariaDB|[Última versión](https://hub.docker.com/_/mariadb)|
+|MySQL|[Última versión](https://hub.docker.com/_/mysql)|
 |OpenLiteSpeed|[Última versión](https://hub.docker.com/r/litespeedtech/openlitespeed)|
 |Laravel|[Última versión](https://hub.docker.com/r/bitnami/laravel/)|
 |phpMyAdmin|[Última versión](https://hub.docker.com/r/bitnami/phpmyadmin/)|
 |Redis|[Última versión](https://hub.docker.com/_/redis/)|
 
+### Uso en producción
+Cuando el proyecto se despliega en un entorno de producción, o si necesitas un entorno de desarrollo más controlado, es altamente recomendable fijar las versiones de las imágenes de Docker para evitar problemas de compatibilidad o actualizaciones inesperadas. Esto garantiza que el entorno se mantenga estable y evita cualquier comportamiento inesperado al actualizarse las imágenes a versiones más recientes de forma automática, se pueden usar versiones especificas usando variables de entorno, el `.env.example` incluye `OLS_VERSION` y `PHP_VERSION` para uso de versiones especificas.
+
+Para especificar una versión de imagen en el archivo `docker-compose.yml`, puedes hacerlo de la siguiente manera:
+
+```yaml
+services:
+  laravel:
+    image: bitnami/laravel:11.1.5
+    environment:
+      LARAVEL_DATABASE_PORT_NUMBER: ${MYSQL_PORT}
+      LARAVEL_DATABASE_NAME: ${MYSQL_DATABASE}
+  mysql:
+    image: mysql:8.4
+  litespeed:
+    image: litespeedtech/openlitespeed:${OLS_VERSION}-${PHP_VERSION}
+```
+
 ### Explicación de los Componentes
+
 En el archivo `docker-compose.yml`, se especifican versiones específicas para los servicios necesarios del entorno. Aquí está una breve descripción:
 
 - **MariaDB**: Un sistema de gestión de bases de datos relacional que es una alternativa mejorada y de código abierto a MySQL.
@@ -62,7 +82,9 @@ docker-compose up --build
 ```
 
 ## Estructura de Datos
+
 Proyecto clonado
+
 ```bash
 ├── acme
 │   └── .gitignore
@@ -71,14 +93,14 @@ Proyecto clonado
 ├── lsws
 │   └── .gitignore
 ├── sites
-│   ├── laravel
+│   ├── JS
 │   │   └── .gitignore
 │   ├── localhost
-│   │   └── html
-│   │       └── .gitignore
+│   │   ├── html
+│   │   │   └── .gitignore
 │   │   └── logs
 │   │       └── .gitignore
-│   └── node
+│   └── PHP
 │       └── .gitignore
 ├── .env.example
 ├── docker-compose.yml
@@ -99,15 +121,21 @@ Proyecto clonado
 ## Comandos principales y uso
 
 ### 1. Clonar el repositorio
+
 Antes de empezar, debes clonar el repositorio de OLS Docker en tu máquina local para poder configurar el entorno correctamente. Ejecuta el siguiente comando en tu terminal:
+
 ```
 git clone https://github.com/9paul20/ols-docker-9paul2.git
 ```
+
 Este comando descargará el repositorio completo en tu directorio actual. Una vez clonado, navega al directorio del proyecto:
+
 ```
 cd ols-docker-9paul2
 ```
+
 Con esto tendrás el código fuente del proyecto listo para los siguientes pasos de configuración, como copiar el archivo de entorno y ejecutar los contenedores Docker.
+
 ### 2. Copiar el archivo de entorno
 
 El archivo `.env` se utiliza para configurar variables de entorno específicas del proyecto, como las credenciales de la base de datos, las rutas de almacenamiento, o las claves API. Antes de ejecutar los contenedores, es necesario copiar el archivo de ejemplo y renombrarlo a `.env`, que será leído automáticamente por el sistema:
@@ -115,6 +143,7 @@ El archivo `.env` se utiliza para configurar variables de entorno específicas d
 ```
 cp .env.example .env
 ```
+
 Este archivo permite que el proyecto se ejecute en diferentes entornos (desarrollo, pruebas, producción) sin necesidad de cambiar el código fuente. Puedes modificar el archivo `.env` para incluir nuevas variables o eliminar aquellas que no sean necesarias.
 
 Si estás trabajando con **Docker Compose**, también puedes agregar o ajustar variables de entorno que serán utilizadas por los servicios definidos en el archivo `docker-compose.yml`. Por ejemplo, puedes definir puertos, bases de datos, o configuraciones específicas de tu aplicación en el `.env`, y luego referenciarlas en el `docker-compose.yml` de esta forma:
@@ -124,20 +153,24 @@ services:
   app:
     image: bitnami/laravel:latest
     environment:
-      - APP_ENV=${APP_ENV}
-      - DB_HOST=${DB_HOST}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 ```
 
 ### 3. Iniciar los contenedores
+
 Para levantar los contenedores con Docker Compose, usa el siguiente comando:
 
 ```
 docker-compose up
 ```
+
 Este comando iniciará los contenedores definidos en el archivo docker-compose.yml.
 
-
 ### 4. Apagar los contenedores
+
 Si necesitas detener los contenedores, usa:
 
 ```
@@ -145,6 +178,7 @@ docker-compose down
 ```
 
 ## Soporte
+
 Si aún tienes preguntas después de usar OpenLiteSpeed Docker, tienes algunas opciones:
 
 * Unete a la comunidad de [GoLiteSpeed Slack community](https://litespeedtech.com/slack) para discusiones en tiempo real.

@@ -1,10 +1,14 @@
 services:
-  mariadb:
-    image: mariadb:latest
-    container_name: mariadb
+  mysql:
+    image: mysql:latest
+    container_name: mysql
     logging:
       driver: none
-    command: ["--max-allowed-packet=512M"]
+    # command: [
+      # "--max-allowed-packet=512M", 
+      # "--wait_timeout=28800", 
+      # "--interactive_timeout=28800"
+    # ]
     volumes:
       - "./data/db:/var/lib/mysql:delegated"
     ports:
@@ -14,6 +18,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TimeZoneMySQL}
     restart: always
     networks:
       - default
@@ -34,7 +39,7 @@ services:
       - 443:443/udp
       - 7080:7080
     depends_on:
-      - mariadb
+      - mysql
     restart: always
     environment:
       TZ: ${TimeZone}
@@ -44,19 +49,19 @@ services:
     image: bitnami/laravel:latest
     container_name: laravel
     volumes:
-      - ./sites/laravel:/app
+      - ./sites/PHP/laravel:/app
     ports:
       - 8000:8000
     environment:
         LARAVEL_SKIP_DATABASE: "no"
         LARAVEL_DATABASE_TYPE: mysql
-        LARAVEL_DATABASE_HOST: mariadb
-        LARAVEL_DATABASE_PORT_NUMBER: ${MYSQL_PORT}
+        LARAVEL_DATABASE_HOST: mysql
+        LARAVEL_DATABASE_PORT_NUMBER: ${MYSQL_LOCAL_PORT}
         LARAVEL_DATABASE_NAME: ${MYSQL_DATABASE}
-        LARAVEL_DATABASE_USER: ${MYSQL_USER}
-        LARAVEL_DATABASE_PASSWORD: ${MYSQL_PASSWORD}
+        LARAVEL_DATABASE_USER: ${MYSQL_ROOT_USER}
+        LARAVEL_DATABASE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     depends_on:
-      - mariadb
+      - mysql
     restart: always
     networks:
       - default
@@ -67,7 +72,7 @@ services:
       - 8080:8080
       - 8443:8443
     environment:
-        DATABASE_HOST: mariadb
+        DATABASE_HOST: mysql
     restart: always
     networks:
       - default
